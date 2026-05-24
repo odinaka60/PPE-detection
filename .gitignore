@@ -1,0 +1,27 @@
+# virtual environment
+venv/
+.venv/
+env/
+
+# model weights
+models/*.pt
+models/*.onnx
+
+# training outputs
+runs/
+
+# dataset images
+data/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# audit logs (may contain camera/compliance data)
+logs/
+
+# VS Code settings
+.vscode/

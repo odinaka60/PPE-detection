@@ -1,0 +1,22 @@
+model:
+  path: "models/best.onnx"
+  confidence_threshold: 0.45
+  iou_threshold: 0.50
+  device: "cpu"
+
+camera:
+  source: 0
+
+ppe:
+  required_classes:
+    - "helmet"
+    - "vest"
+    - "gloves"
+
+privacy:
+  anonymize_faces: true
+  blur_strength: 51
+
+audit:
+  output_dir: "logs/"
+  camera_id: "CAM-ZONE-A"
