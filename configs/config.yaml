@@ -4,7 +4,7 @@ model:
   iou_threshold: 0.50
   device: "cpu"
 
-camera:
+video:
   source: 0
 
 ppe:
