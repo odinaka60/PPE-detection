@@ -1,12 +1,17 @@
 from ultralytics import YOLO
+from src.core.detection import load_model
+from src.utils.config_loader import load_config
 
-def load_model(path: str):
-    return YOLO(path)
 
-def run_detection(frame, model, confidence_threshold: float):
-    results = model(frame, conf=confidence_threshold, verbose=False)
-    detections = []
-    for result in results:
+cfg = load_config("configs/config.yaml")
+model    = load_model(cfg["model"]["path"])
+
+#model = YOLO("models/best.onnx")
+
+results = model("tests/images/construction_worker.png")
+detections = []
+
+for result in results:
         for box in result.boxes:
             class_id = int(box.cls[0])
             class_name = model.names[class_id]
@@ -17,4 +22,5 @@ def run_detection(frame, model, confidence_threshold: float):
                 "confidence": round(confidence, 3),
                 "box": (int(x1), int(y1), int(x2), int(y2)),
             })
-    return detections
+
+print(detections)

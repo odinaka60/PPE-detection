@@ -2,13 +2,15 @@ import cv2
 from src.utils.config_loader import load_config
 from src.utils.audit_logger import AuditLogger
 from src.core.detection import load_model, run_detection
+from src.utils.visualizer import draw_detections
+
 
 def main():
     cfg = load_config("configs/config.yaml")
 
-    model    = load_model(cfg["model"]["path"])
-    logger   = AuditLogger(cfg["audit"]["output_dir"])
-    cap      = cv2.VideoCapture(cfg["camera"]["source"])
+    model  = load_model(cfg["model"]["path"])
+    logger = AuditLogger(cfg["audit"]["output_dir"])
+    cap    = cv2.VideoCapture(cfg["camera"]["source"])
 
     REQUIRED = set(cfg["ppe"]["required_classes"])
     frame_count = 0
@@ -21,8 +23,7 @@ def main():
         while True:
             ret, frame = cap.read()
             if not ret:
-                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                continue
+                break
 
             if frame_count % INFER_EVERY == 0:
                 detections = run_detection(
@@ -43,6 +44,7 @@ def main():
                     )
 
             frame_count += 1
+            draw_detections(frame, detections)
             cv2.imshow("PPE Monitor", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break

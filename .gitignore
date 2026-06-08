@@ -32,4 +32,7 @@ logs/
 *.mov
 *.mkv
 tests/videos/
+tests/images/
+
+
 
