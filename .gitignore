@@ -6,6 +6,7 @@ env/
 # model weights
 models/*.pt
 models/*.onnx
+models/*.tflite
 
 # training outputs
 runs/
@@ -25,3 +26,10 @@ logs/
 
 # VS Code settings
 .vscode/
+
+*.mp4
+*.avi
+*.mov
+*.mkv
+tests/videos/
+

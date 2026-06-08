@@ -12,8 +12,10 @@ def run_detection(frame, model, confidence_threshold: float):
             class_id = int(box.cls[0])
             class_name = model.names[class_id]
             confidence = float(box.conf[0])
+            x1, y1, x2, y2 = box.xyxy[0].tolist()
             detections.append({
                 "class": class_name,
-                "confidence": round(confidence, 3)
+                "confidence": round(confidence, 3),
+                "box": (int(x1), int(y1), int(x2), int(y2)),
             })
     return detections
