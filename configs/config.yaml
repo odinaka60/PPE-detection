@@ -8,8 +8,8 @@ camera:
   source: "tests/videos/construction_worker.mp4"
 
 ppe:
-  required_classes: [Helmet, Gloves, Mask, Glasses, Vest]
-  person_class: Person       
+  required_classes: [Hardhat, Gloves, Goggles, "Safety Vest"]
+  person_class: Person      
   min_containment: 0.5       
 
 violation:
