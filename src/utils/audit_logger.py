@@ -1,5 +1,5 @@
 import json
-import json, time
+import time
 from pathlib import Path
 
 class AuditLogger:
@@ -9,6 +9,5 @@ class AuditLogger:
 
     def write(self, record: dict):
         record.setdefault("logged_at", time.time())
-        path = Path(self.output_dir) / "violations.jsonl"
-        with open(path, "a") as f:
+        with open(self.path, "a") as f:
             f.write(json.dumps(record) + "\n")

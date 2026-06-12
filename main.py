@@ -3,7 +3,7 @@ import cv2
 from src.utils.config_loader import load_config
 from src.utils.audit_logger import AuditLogger
 from src.utils.overlay import draw_overlay
-from src.core.detection import load_model, run_tracking
+from src.core.detection import load_models, run_tracking
 from src.core.association import associate_ppe_to_persons
 from src.core.violation_tracker import ViolationTracker
 
@@ -11,12 +11,11 @@ from src.core.violation_tracker import ViolationTracker
 def main():
     cfg = load_config("configs/config.yaml")
 
-    model  = load_model(cfg["model"]["path"])
+    ppe_model, person_model = load_models(cfg["model"]["path"], cfg["model"]["person_path"])
     logger = AuditLogger(cfg["audit"]["output_dir"])
     cap    = cv2.VideoCapture(cfg["camera"]["source"])
 
     REQUIRED     = set(cfg["ppe"]["required_classes"])
-    PERSON_CLASS = cfg["ppe"].get("person_class", "Person")
     MIN_CONTAIN  = cfg["ppe"].get("min_containment", 0.5)
     CONF         = cfg["model"]["confidence_threshold"]
     INFER_EVERY  = cfg.get("runtime", {}).get("infer_every", 5)
@@ -29,9 +28,9 @@ def main():
         forget_after=vcfg.get("forget_after", 15),
     )
 
-    
     persons, ppe_items, worn = [], [], {}
     frame_count = 0
+    last_now = 0.0
 
     print("System running — press Q to quit")
     try:
@@ -42,19 +41,29 @@ def main():
 
             if frame_count % INFER_EVERY == 0:
                 persons, ppe_items = run_tracking(
-                    frame, model, CONF, person_class=PERSON_CLASS
-                )
+                    frame, ppe_model, person_model, CONF,
+                    person_conf=cfg["model"].get("person_confidence", 0.30),
+                    min_person_h=cfg["model"].get("min_person_height", 0.25),
+)
                 worn = associate_ppe_to_persons(persons, ppe_items, MIN_CONTAIN)
-
-                for ev in violations.update(worn):
+                now = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+                last_now = now
+                events = violations.update(worn, now=now)
+                print(f"persons={len(persons)}  ppe={len(ppe_items)}  worn={worn}  events={len(events)}")
+                for ev in events:
                     ev["camera_id"] = cfg["audit"]["camera_id"]
-                    logger.write(ev)  
+                    logger.write(ev)
 
             frame_count += 1
             draw_overlay(frame, persons, ppe_items, worn, REQUIRED)
             cv2.imshow("PPE Monitor", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
+
+        # stream ended — close out anyone still in violation
+        for ev in violations.flush(now=last_now):
+            ev["camera_id"] = cfg["audit"]["camera_id"]
+            logger.write(ev)
     finally:
         cap.release()
         cv2.destroyAllWindows()

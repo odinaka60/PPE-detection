@@ -39,9 +39,9 @@ class ViolationTracker:
         self.forget_after = forget_after
         self._states: Dict[int, _State] = {}
 
-    def update(self, worn: Dict[int, Set[str]]) -> List[dict]:
+    def update(self, worn,  now=None) -> List[dict]:
         """Feed one cycle of {track_id: worn_ppe}. Returns the events to log."""
-        now = time.time()
+        now = time.time() if now is None else now 
         events: List[dict] = []
         seen = set(worn)
 
