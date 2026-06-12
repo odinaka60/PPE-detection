@@ -34,5 +34,10 @@ logs/
 tests/videos/
 tests/images/
 
+# environment
+.env
+
+reports/
+
 
 
