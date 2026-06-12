@@ -39,6 +39,14 @@ class ViolationTracker:
         self.forget_after = forget_after
         self._states: Dict[int, _State] = {}
 
+    def flush(self, now=None):
+        """Close any still-open episodes. Call this when the stream ends."""
+        now = time.time() if now is None else now
+        events = [self._close(pid, st, now)
+              for pid, st in list(self._states.items()) if st.active]
+        self._states.clear()
+        return events
+
     def update(self, worn,  now=None) -> List[dict]:
         """Feed one cycle of {track_id: worn_ppe}. Returns the events to log."""
         now = time.time() if now is None else now 
