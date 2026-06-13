@@ -23,7 +23,8 @@ def main():
 
     agent_query = HumanMessage(content=f"Write a complaince report based on this summary {summary} ")
     response = agent.invoke({"messages": [agent_query]})
-    save_report(response['messages'][1].content)
+    #print(response['messages'][-1].content)
+    save_report(response['messages'][-1].content)
   
 
 

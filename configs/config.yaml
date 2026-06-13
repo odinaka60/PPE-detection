@@ -9,7 +9,7 @@ model:
 
 agent:
   provider: "ollama"                                        
-  model: "llama3.1"
+  model: "gpt-5-nano"
   embeddings_model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
   vectorstore_dir: "data/vectorstore"
   regulations_dir: "data/regulations"
